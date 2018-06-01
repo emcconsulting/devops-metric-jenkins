@@ -1,0 +1,11 @@
+{
+  "ns0:XMLDataValidation": {
+    "-xmlns:ns0": "",
+    "ns0:DataElement": {
+    	"attribute":"authorJenkinsId",
+      	"validationType": "^[a-zA-Z0-9]*$"
+      
+   }
+   
+  }
+}

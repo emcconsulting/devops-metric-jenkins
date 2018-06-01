@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:XMLDataValidation xmlns:ns0 = "http://www.citi.com/xml/api/data/validation">
+<ns0:DataElement>
+			<ElementPath>commitId</ElementPath>
+			<ConstraintName>isExist</ConstraintName>
+</ns0:DataElement>
+<ns0:DataElement>
+			<ElementPath>authorJenkinsId</ElementPath>
+			<ConstraintName>nonZero </ConstraintName>
+</ns0:DataElement>
+<ns0:DataElement>
+			<ElementPath>commitId</ElementPath>
+			<ConstraintName>nonZero</ConstraintName>
+</ns0:DataElement>
+<ns0:DataElement>
+			<ElementPath>commitUrl</ElementPath>
+			<ConstraintName>isExist</ConstraintName>
+</ns0:DataElement>
+<ns0:DataElement>
+			<ElementPath>child.message.*</ElementPath>
+			<ConstraintName>isExist</ConstraintName>
+</ns0:DataElement>
+</ns0:XMLDataValidation>
