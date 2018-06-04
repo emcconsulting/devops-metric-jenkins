@@ -1,0 +1,198 @@
+<head>
+    <div  style= "
+        background-color: #29384D;
+        color: #929daf;
+        text-align: left;
+        line-height: 40px;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+        font-weight: 400;
+        text-shadow: 1px 1px #06060d;
+    position: relative;
+    top:0;
+    padding-left:20%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    right: 0;
+    width: 100%;
+    height:100px;
+    z-index: 1;
+    font-size: 20pt;"><img style="padding-left:20px;" height=100px width=300px src="logo/logo-dellemc.png" alt="dell-emc"><h1 style="padding-left:20px; display: inline;"><span style="color: #0761ba; font-size:60px">D</span>evOps <span style="color: #0761ba; font-size:80px">&#956;</span>etrices</h1></div>
+        <link rel="stylesheet" href="donut.css">
+<script  src = "d3.v3.min.js"></script></head>
+<body>
+        
+        <div class="widget">
+               
+                <div class="header">CICD Pipeline Compliant Metric</div>
+                <div id="chart" class="chart-container">
+                      <a href="./table.html">Details</a>
+                    </div>
+        </div>
+        
+<script>
+
+    var newdata={};
+    var project={};
+    d3.json('http://localhost:8080/projects', function(data){
+            project=data.jobs[0].name;
+            d3.select("#chart").append('p').text("Project: "+project).style("color","#929daf");
+          }).header("Authorization", "Basic YWRtaW46YWRtaW4=");
+     
+var dataset=[];
+d3.json('http://localhost:8080/compitency/sonar', function(data){
+    var div = d3.select("body").append("div").style("top","0");
+          var svg = d3.select("body").append("svg")
+          .attr("height","100%")
+          .attr("width","100%");
+          
+    newdata=data;
+
+// console.log("hi"     +newdata[0]);
+    var percentage=0
+    var isExist=true;
+    for(var i=0; i<newdata.length; i++){
+        console.log("I is "+i+" "+newdata);
+        if(i!=0)
+        for(var j=dataset.length-1; j>=0; j--){
+            // console.log(dataset.find(x => x.name == newdata[i]));
+
+            console.log(i+" "+j+"dataset"+ dataset[j].name);
+            if(dataset[j].name == newdata[i]){
+             
+                console.log("Yess "+dataset[j].name+" ");
+                console.log(parseInt(dataset[j].percent+20));
+                var per=parseInt(dataset[j].percent)+20;
+                dataset[j].percent=''+per;
+                isExist=false;
+                break;
+            }
+            console.log("updated dataset"+dataset);
+        //    j--;
+        }
+        if(isExist || i==0)
+        dataset.push({name: ''+newdata[i], percent:20});
+        isExist=true;
+    }
+    console.log(dataset);
+    // dataset = [
+    //     { name: ' '+ newdata[0], percent: 25 },
+    //     { name: ' '+ newdata[1], percent: 25 },
+    //     { name: ' '+ newdata[2], percent: 25 },
+    //     { name: ' '+ newdata[3], percent: 25 }
+    // ];
+   
+     
+    var pie=d3.layout.pie().value(function(d){return d.percent}).sort(null).padAngle(.03);
+     
+    var w=300,h=300;
+     
+    var outerRadius=w/2;
+    var innerRadius=100;
+     
+    var color = d3.scale.category10();
+     
+    var arc=d3.svg.arc()
+      .outerRadius(outerRadius)
+      .innerRadius(innerRadius);
+     
+    var svg=d3.select("#chart")
+      .append("svg")
+      .attr({
+          width:w,
+          height:h,
+          class:'shadow'
+      }).append('g')
+      .attr({
+          transform:'translate('+w/2+','+h/2+')'
+      });
+    var path=svg.selectAll('path')
+      .data(pie(dataset))
+      .enter()
+      .append('path')
+      .attr({
+          d:arc,
+          fill:function(d,i){
+              return color(d.data.name);
+          }
+      });
+     
+    path.transition()
+      .duration(1000)
+      .attrTween('d', function(d) {
+          var interpolate = d3.interpolate({startAngle: 0, endAngle: 0}, d);
+          return function(t) {
+              return arc(interpolate(t));
+          };
+      });
+     
+     
+    var restOfTheData=function(){
+        var text=svg.selectAll('text')
+            .data(pie(dataset))
+            .enter()
+            .append("text")
+            .transition()
+            .duration(200)
+            .attr("transform", function (d) {
+                return "translate(" + arc.centroid(d) + ")";
+            })
+            .attr("dy", ".4em")
+            .attr("text-anchor", "middle")
+            .text(function(d){
+                return d.data.percent+"%";
+            })
+            .style({
+                fill:'#fff',
+                'font-size':'10px'
+            });
+     
+        var legendRectSize=20;
+        var legendSpacing=7;
+        var legendHeight=legendRectSize+legendSpacing;
+     
+     
+        var legend=svg.selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr({
+                class:'legend',
+                transform:function(d,i){
+                    //Just a calculation for x & y position
+                    return 'translate(-35,' + ((i*legendHeight)-65) + ')';
+                }
+            });
+        legend.append('rect')
+            .attr({
+                width:legendRectSize,
+                height:legendRectSize,
+                rx:20,
+                ry:20
+            })
+            .style({
+                fill:color,
+                stroke:color
+            });
+     
+        legend.append('text')
+            .attr({
+                x:30,
+                y:15
+            })
+            .text(function(d){
+                return d;
+            }).style({
+                fill:'#929DAF',
+                'font-size':'14px'
+            });
+    };
+     
+    setTimeout(restOfTheData,1000);
+    console.log(newdata[0]);
+          }).header("Authorization", "Basic YWRtaW46YWRtaW4=");
+;
+    </script>
+
+</div>
+</body>

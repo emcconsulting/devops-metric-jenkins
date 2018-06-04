@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+ <div  style= "background-color: #29384D;
+        color: #929daf;
+        text-align: left;
+        line-height: 40px;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+        font-weight: 400;
+        text-shadow: 1px 1px #06060d;
+    position: relative;
+    top:0;
+    padding-left:20%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    right: 0;
+    width: 100%;
+    height:100px;
+    z-index: 1;
+    font-size: 20pt;"><img style="padding-left:20px;" height=100px width=300px src="logo/logo-dellemc.png" alt="Dell-EMC"> <h1 style="padding-left:20px; display: inline;"><span style="color: #0761ba; font-size:60px">D</span>evOps <span style="color: #0761ba; font-size:80px">&#956;</span>etrices</h1></div>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <style>
+        body {
+            width: 100%;
+            font-family: 'Roboto', sans-serif;
+            height: 100%;
+            background-color: #1B1F2A;
+        }
+
+        div {
+            background-color: rgb(78, 140, 151);
+            position: absolute;
+            top:0;
+            left: 0;
+            width: 100%;
+            z-index: 1;
+            text-align: center;
+            font-size: 15pt;
+            color: #f2f2f2;
+        }
+
+        table {
+            padding: 8px;
+            height: 300px;
+            width: 600px;
+            text-align: center;
+            margin-top: 8%;
+            margin-left: 25%;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        td{
+            background-color: aliceblue;
+        }
+        th {
+            text-align: center;
+            background-color: #929daf;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <script>
+        var newdata = {};
+        d3.json('http://localhost:8080/stage/sonar', function (data) {
+            var table = d3.select("body").append("table");
+            // var div = d3.select("body").append("div").style("top","0");
+            // div.append("h1").html("DevOps &#956;atrix");
+            var tr = table.append("tr");
+            tr.append("th").text("S. No.");
+            tr.append("th").text("Rule");
+            tr.append("th").text("Value");
+            var newmetric;
+
+            for (var key in data.conditions) {
+                if (data.conditions[key].metric)
+                    tr = table.append("tr");
+                if (data.conditions[key].metric == "new_security_rating") {
+                    newmetric = "Security";
+                } else if (data.conditions[key].metric == "new_reliability_rating") {
+                    newmetric = "Reliability Rating";
+                } else if (data.conditions[key].metric == "new_maintainability_rating") {
+                    newmetric = "Maintainability Rating";
+                } else if (data.conditions[key].metric == "new_coverage") {
+                    newmetric = "Coverage";
+                } else if (data.conditions[key].metric == "major_violations"){
+                    newmetric = "Major Violations";
+                }
+                tr.append("td").text(data.conditions[key].id);
+                tr.append("td").text(newmetric);
+                tr.append("td").text(data.conditions[key].error);
+                console.log(data.conditions[key]);
+
+            }
+        });
+    </script>
+</body>
+
+</html>
