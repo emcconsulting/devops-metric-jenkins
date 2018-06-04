@@ -30,7 +30,7 @@ public class Validator {
 	static ValidationRule rule;
 	static String currentPath=null;
 	public static final String ELEMENT = "ns0:DataElement";
-	public static final String PATH = "C:\\Users\\lohana1\\Desktop\\DevOps\\gs-rest-service-master\\gs-rest-service-master\\complete\\src\\main\\resources\\validation.xml";
+//	public static final String PATH = "C:\\Users\\lohana1\\Desktop\\DevOps\\gs-rest-service-master\\gs-rest-service-master\\complete\\src\\main\\resources\\validation.xml";
 	static Map<String, String> xmlMapping = new LinkedHashMap<String, String>();
 	static Map<String, Predicate<Object>> predicateRegister= new HashMap<String, Predicate<Object>>();
 
@@ -175,7 +175,7 @@ public class Validator {
 */
 	@PostConstruct
 	private void init() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ParserConfigurationException, SAXException {
-		parseRuleXML(PATH);
+//		parseRuleXML(PATH);
 	}
 
 }
