@@ -15,8 +15,8 @@ import com.devops.competency.dto.Run;
 @Service
 public class CompetencyServiceImpl {
 	
-	public static final String JENKINSURL="http://192.168.35.11:8080";
-	public static final String SONARURL="http://192.168.35.11:9000";
+	public static final String JENKINSURL="http://jenkins.ci-server.com";
+	public static final String SONARURL="https://sonar.ci-server.com";
 	public Project getProjectDetails() {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
@@ -54,7 +54,7 @@ public class CompetencyServiceImpl {
 	
 	public ChangeSet[] getCommitbyRunid(int id, HttpHeaders  headers) {
 		RestTemplate restTemplate = new RestTemplate();
-		System.out.println("http://192.168.35.11:8080/job/CICD Competency/"+ id +"/wfapi/changesets");
+		//System.out.println("http://192.168.35.11:8080/job/CICD Competency/"+ id +"/wfapi/changesets");
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
 		ChangeSet[] result = restTemplate.getForObject(JENKINSURL+"/job/CICD Competency/"+ id +"/wfapi/changesets",
 				ChangeSet[].class);
