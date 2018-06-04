@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,6 +51,7 @@ import net.minidev.json.JSONArray;
  *         point for project details, job details etc.
  *
  */
+@CrossOrigin (maxAge = 30)
 public class CompetencyController {
 
 	@Autowired
