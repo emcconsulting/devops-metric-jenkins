@@ -1,0 +1,1 @@
+docker system prune && docker image prune && docker rm -v $(docker ps -aq -f 'status=exited') && docker rmi $(docker images -aq -f 'dangling=true') && docker volume prune
