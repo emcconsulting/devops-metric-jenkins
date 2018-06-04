@@ -16,11 +16,12 @@ import com.devops.competency.dto.Run;
 public class CompetencyServiceImpl {
 	
 	public static final String JENKINSURL="http://jenkins.ci-server.com";
-	public static final String SONARURL="https://sonar.ci-server.com";
+	public static final String SONARURL="http://sonar.ci-server.com";
+//	CompetencyServiceImpl competencyServiceImpl= new CompetencyServiceImpl();
 	public Project getProjectDetails() {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
-		Project result = restTemplate.getForObject(JENKINSURL+"/job/CICD Competency/wfapi/",
+		Project result = restTemplate.getForObject(JENKINSURL+"/job/"+"/wfapi/",
 				Project.class);
 		System.out.println(result);
 		return result;
@@ -38,7 +39,7 @@ public class CompetencyServiceImpl {
 	public Run[] getAllRuns() {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));		
-		Run run []= restTemplate.getForObject(JENKINSURL+"/job/CICD Competency/wfapi/runs", Run[].class);	
+		Run run []= restTemplate.getForObject(JENKINSURL+"/job/sample-service-demo-pipeline/wfapi/runs", Run[].class);	
 		return run;
 		
 	}
@@ -56,7 +57,7 @@ public class CompetencyServiceImpl {
 		RestTemplate restTemplate = new RestTemplate();
 		//System.out.println("http://192.168.35.11:8080/job/CICD Competency/"+ id +"/wfapi/changesets");
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
-		ChangeSet[] result = restTemplate.getForObject(JENKINSURL+"/job/CICD Competency/"+ id +"/wfapi/changesets",
+		ChangeSet[] result = restTemplate.getForObject(JENKINSURL+"/job/sample-service-demo-pipeline/"+ id +"/wfapi/changesets",
 				ChangeSet[].class);
 		System.out.println(result);
 		return result;

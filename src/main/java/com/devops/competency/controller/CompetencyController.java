@@ -43,7 +43,6 @@ import com.jayway.jsonpath.JsonPath;
 
 import net.minidev.json.JSONArray;
 
-@Controller
 @RestController
 /**
  * 
@@ -197,8 +196,7 @@ public class CompetencyController {
 			}
 			else 
 				reason[i++]= /*rule.getMetric() + "is compliance"+*/ "Compliance" /*sonarComplianceRules.getProperty(rule.getMetric())*/;	
-			
-//			if(rule.getError()==complianceRules.get
+
 		}
 		return reason;
 	}
