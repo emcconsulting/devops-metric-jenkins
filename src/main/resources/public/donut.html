@@ -47,7 +47,7 @@
     var project={};
     d3.json('http://localhost:8080/projects', function(data){
             project=data.jobs[0].name;
-            d3.select("#chart").append('p').text("Project: IVH").style("color","#929daf");
+            d3.select("#chart").append('p').text("Project: IPH").style("color","#929daf");
           }).header("Authorization", "Basic YWRtaW46YWRtaW4=");
      
 var dataset=[];
