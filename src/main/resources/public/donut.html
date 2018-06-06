@@ -45,13 +45,13 @@
 
     var newdata={};
     var project={};
-    d3.json('http://localhost:8080/projects', function(data){
+    d3.json('http://metrics.sol-accelerators.com/projects', function(data){
             project=data.jobs[0].name;
             d3.select("#chart").append('p').text("Project: IPH").style("color","#929daf");
           }).header("Authorization", "Basic YWRtaW46YWRtaW4=");
      
 var dataset=[];
-d3.json('http://localhost:8080/compitency/sonar', function(data){
+d3.json('http://metrics.sol-accelerators.com/compitency/sonar', function(data){
     var div = d3.select("body").append("div").style("top","0");
           var svg = d3.select("body").append("svg")
           .attr("height","100%")
@@ -205,13 +205,13 @@ d3.json('http://localhost:8080/compitency/sonar', function(data){
 
 
 //two
-d3.json('http://localhost:8080/projects', function(data){
+d3.json('http://metrics.sol-accelerators.com/projects', function(data){
     project=data.jobs[0].name;
     d3.select("#chart2").append('p').text("Project: CICD Compliance").style("color","#929daf");
   }).header("Authorization", "Basic YWRtaW46YWRtaW4=");
 
 var dataset=[];
-d3.json('http://localhost:8080/compitency/sonar', function(data){
+d3.json('http://metrics.sol-accelerators.com/compitency/sonar', function(data){
 var div = d3.select("body").append("div").style("top","0");
   var svg = d3.select("body").append("svg")
   .attr("height","100%")
