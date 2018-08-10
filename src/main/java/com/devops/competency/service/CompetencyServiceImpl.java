@@ -1,5 +1,7 @@
 package com.devops.competency.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import com.devops.competency.dto.Run;
 
 @Service
 public class CompetencyServiceImpl {
+	public static final Logger logger = LoggerFactory.getLogger(CompetencyServiceImpl.class);
 	
 	public static final String JENKINSURL="http://jenkins.ci-server.com";
 	public static final String SONARURL="http://sonar.ci-server.com";
@@ -66,8 +69,10 @@ public class CompetencyServiceImpl {
 	
 	public Object getSonarQubeRules() {
 		RestTemplate restTemplate = new RestTemplate();
-//		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));		
-		Object stage= restTemplate.getForObject(SONARURL+"/api/qualitygates/show?id=1", Object.class);	
+//		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
+		
+		Object stage= restTemplate.getForObject(SONARURL+"/api/qualitygates/show?name=sonar", Object.class);	
+		logger.info("stages list from sonar "+stage.toString() );
 		return stage;
 		
 	}

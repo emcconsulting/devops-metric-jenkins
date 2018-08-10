@@ -14,6 +14,8 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
@@ -59,6 +61,9 @@ public class CompetencyController {
 
 	@Autowired
 	RuleDefinition commitValidator;
+	
+	public static final Log logger = LogFactory.getLog(CompetencyServiceImpl.class);
+
 	
 	public static Properties sonarComplianceRules= new Properties();
 
@@ -125,7 +130,7 @@ public class CompetencyController {
 	public JSONArray getStageUrl() {
 		Run[] runs = competencyServiceImpl.getAllRuns();
 		Gson gson = new Gson();
-		System.out.println("calling get property for stages" + gson.toJson(runs[0]));
+		logger.info("calling get property for stages" + gson.toJson(runs[0]));
 		JSONArray stages = getPropertyValues(runs[0], "stages.._links.self.href");
 		// System.out.println(stages.get(0));
 		return stages;
@@ -141,14 +146,14 @@ public class CompetencyController {
 	public Map<String, String> getStages() {
 		JSONArray stages = getStageUrl();
 		for (Object stage : stages) {
-			System.out.println("=====NEW STAGE======" + stage.toString().replace("%20", " "));
+			logger.info("=====NEW STAGE======" + stage.toString().replace("%20", " "));
 			stage = competencyServiceImpl.getStageDetails(stage.toString().replace("%20", " "));
 			if (isSonar(stage)) {
 
 				String command = getPropertyValues(stage, "stageFlowNodes..parameterDescription").toString();
 				String url = command.substring(command.lastIndexOf("url=") + 4, command.lastIndexOf("\"") - 1);
 				stageNames.put("Sonar Stage", url.replace("\\", ""));
-				System.out.println("URL is" + command.toString().substring(command.toString().lastIndexOf("url=") + 4));
+				logger.info("URL is" + command.toString().substring(command.toString().lastIndexOf("url=") + 4));
 
 			}
 			if (isJUnit(stage)) {
@@ -179,7 +184,8 @@ public class CompetencyController {
 		Object sonarDetails=getSonarStage();
 		ObjectMapper objectMapper = new ObjectMapper();
 		JSONArray sonarRulesJson=getPropertyValues(sonarDetails, "conditions.*");	
-		System.out.println("sonar Rules ************ "+sonarRulesJson);
+		logger.info("sonar rules "+ sonarRulesJson);
+//		System.out.println("sonar Rules ************ "+sonarRulesJson);
 		Gson gson= new Gson();
 		Rule [] sonarRules=gson.fromJson(sonarRulesJson.toString(), Rule[].class);
 //		Object sonarRules=objectMapper.convertValue(sonarRulesJson, Object.class);

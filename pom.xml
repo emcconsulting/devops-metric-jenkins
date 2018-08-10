@@ -79,6 +79,11 @@
 					<tagBase>${nexus.repo.url}/repository/maven-releases</tagBase>
 				</configuration>
 			</plugin>
+			    <plugin>
+      			<groupId>com.github.ferstl</groupId>
+      			<artifactId>depgraph-maven-plugin</artifactId>
+      			<version>3.2.0</version>
+    		</plugin>
 		</plugins>
 	</build>
 
