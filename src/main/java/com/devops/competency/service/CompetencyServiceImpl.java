@@ -1,5 +1,8 @@
 package com.devops.competency.service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
@@ -19,17 +22,22 @@ import com.devops.competency.dto.Run;
 public class CompetencyServiceImpl {
 	public static final Logger logger = LoggerFactory.getLogger(CompetencyServiceImpl.class);
 	
-	@Value("${JENKINSURL}")
-	public static String JENKINSURL;
-	@Value("${SONARURL}")
-	public static String SONARURL;
-	@Value("${sonarProjectName}")
-	public static String SONARPROJECTNAME;
-//	CompetencyServiceImpl competencyServiceImpl= new CompetencyServiceImpl();
-	public Project getProjectDetails() {
+	@Value("${jenkins.url}")
+	public String JENKINSURL;
+	@Value("${sonar.url}")
+	public String SONARURL;
+	@Value("${sonar.project}")
+	public String SONARPROJECTNAME;
+	@Value("${jenkins.project}")
+	public String JENKINSPROJECTNAME;
+	
+	
+	public Project getProjectDetails() throws URISyntaxException {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
-		Project result = restTemplate.getForObject(JENKINSURL+"/job/"+"/wfapi/",
+		URI uri= new URI(null, null, null, 8080, "/job/"+JENKINSPROJECTNAME+"/wfapi", null, null);
+		logger.info("calling jenkins uri "+JENKINSURL+ uri);
+		Project result = restTemplate.getForObject(JENKINSURL+uri,
 				Project.class);
 		System.out.println(result);
 		return result;

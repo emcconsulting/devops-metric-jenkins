@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,7 +85,14 @@ public class CompetencyController {
 	 */
 	@RequestMapping("/project")
 	public Project getProjectDetails() {
-		return competencyServiceImpl.getProjectDetails();
+		logger.info("getting project details");
+		try {
+			return competencyServiceImpl.getProjectDetails();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+			return new Project();
+		}
 		// return new Project(new Links(new Self("https://abc"), new
 		// Runs("https://abc/describe")), "CICD Competancy", null, null);
 	}
@@ -114,8 +123,9 @@ public class CompetencyController {
 	/*
 	 * This API will give you a set id all the stages of all the jobs in a project.
 	 */
-	@RequestMapping("/jobs/all/stages")
+	@GetMapping("/jobs/all/stages")
 	public Run[] getAllJobsStages() {
+		logger.info("getting all stages");
 
 		return competencyServiceImpl.getAllRuns();
 	}
