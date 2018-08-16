@@ -232,7 +232,7 @@ public class CompetencyController {
 
 		if (command.toString().contains("sonar")) {
 
-			System.out.println("===========YES SONAR=================");
+			logger.debug("===========YES SONAR=================");
 			return true;
 		}
 
@@ -260,12 +260,12 @@ public class CompetencyController {
 	public static JSONArray getPropertyValues(Object object, String path) {
 
 		String value = null;
-		System.out.println("Inside getPropertyValue " + path);
+		logger.debug("Inside getPropertyValue " + path);
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<?, ?> map = objectMapper.convertValue(object, LinkedHashMap.class);
-		System.out.println("Parsing started ");
+		logger.debug("Parsing started ");
 		DocumentContext documentContext = JsonPath.parse(map);
-		System.out.println("Parsing end " + documentContext.jsonString());
+		logger.debug("Parsing end " + documentContext.jsonString());
 		return documentContext.read("$." + path);
 	}
 
@@ -277,14 +277,14 @@ public class CompetencyController {
 	 */
 	public static String getPropertyValue(Object object, String path) {
 		String value = null;
-		System.out.println("Inside getPropertyValue" + path);
+		logger.debug("Inside getPropertyValue" + path);
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<?, ?> map = objectMapper.convertValue(object, LinkedHashMap.class);
-		System.out.println("Parsing started");
+		logger.debug("Parsing started");
 		DocumentContext documentContext = JsonPath.parse(map);
-		System.out.println("Parsing end" + path);
+		logger.debug("Parsing end" + path);
 		value = documentContext.read("$." + path);
-		System.out.println("value retrieved");
+		logger.debug("value retrieved");
 		return value;
 
 	}
@@ -307,8 +307,6 @@ public class CompetencyController {
 	public String postCommit(@RequestBody String httpEntity)
 			throws JsonParseException, JsonMappingException, IOException, NoSuchMethodException, SecurityException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		System.out.println("I am in the controller");
-		System.out.println(httpEntity);
 		ClubCommits commits = null;
 		ObjectMapper objectMapper = new ObjectMapper();
 		Gson gson = new Gson();
