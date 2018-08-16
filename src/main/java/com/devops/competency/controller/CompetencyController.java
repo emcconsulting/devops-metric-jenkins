@@ -208,7 +208,9 @@ public class CompetencyController {
 		String [] reason= new String[sonarRules.length];
 		int i=0;
 		for (Rule rule: sonarRules){
-			
+			logger.info(sonarRules.toString());
+			logger.info("Rule from sonar is "+ rule.getMetric());
+			logger.info("Rule is "+ sonarComplianceRules.getProperty(rule.getMetric()));
 			if(Integer.parseInt(sonarComplianceRules.getProperty(rule.getMetric())) > Integer.parseInt(rule.getError())) {
 				 reason[i++]=/*rule.getMetric()+" should be greater than"+ */"Non Compliance"/*+rule.getMetric().substring(4)+sonarComplianceRules.getProperty(rule.getMetric())*/;
 			}
@@ -310,7 +312,6 @@ public class CompetencyController {
 		ClubCommits commits = null;
 		ObjectMapper objectMapper = new ObjectMapper();
 		Gson gson = new Gson();
-
 		// try {
 		Commit[] commit = null;
 		commit = objectMapper.readValue(httpEntity, Commit[].class);
@@ -345,13 +346,14 @@ public class CompetencyController {
 	@PostConstruct
 	public void init() throws IOException {
 		String resourceName="rule.properties";
+		logger.info("Calling post construct");
 		ClassLoader loader= Thread.currentThread().getContextClassLoader();
 //		Properties rule=new Properties();
 		InputStream resourceStream= loader.getResourceAsStream(resourceName);
 //		rule.load(inStream);
 //		InputStream input = new FileInputStream("rule.properties");
 		sonarComplianceRules.load(resourceStream);
-		
+		logger.info("load completes total rules are"+ sonarComplianceRules.size());
 	}
 
 }
