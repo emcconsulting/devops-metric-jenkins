@@ -30,11 +30,15 @@ public class CompetencyServiceImpl {
 	public String SONARPROJECTNAME;
 	@Value("${jenkins.project}")
 	public String JENKINSPROJECTNAME;
+	@Value("${jenkins.username}")
+	public String JENKINSUSERNAME;
+	@Value("${jenkins.password}")
+	public String JENKINSPASSWORD;
 	
 	
 	public Project getProjectDetails() throws URISyntaxException {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));
 		URI uri= new URI(null, null, null, 8080, "/job/"+JENKINSPROJECTNAME+"/wfapi", null, null);
 		logger.info("calling jenkins uri "+JENKINSURL+ uri);
 		Project result = restTemplate.getForObject(JENKINSURL+uri,
@@ -47,14 +51,14 @@ public class CompetencyServiceImpl {
 
 	public Projects getProject() {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));
 		Projects result = restTemplate.getForObject(JENKINSURL+"/api/json", Projects.class);
 		return result;
 	}
 	
 	public Run[] getAllRuns() {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));		
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));		
 		Run run []= restTemplate.getForObject(JENKINSURL+"/job/mdthelloworld/wfapi/runs", Run[].class);	
 		return run;
 		
@@ -62,7 +66,7 @@ public class CompetencyServiceImpl {
 	
 	public Object getStageDetails(String path) {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));		
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));		
 		Object stage= restTemplate.getForObject(JENKINSURL+"/"+path, Object.class);	
 		return stage;
 		
@@ -72,7 +76,7 @@ public class CompetencyServiceImpl {
 	public ChangeSet[] getCommitbyRunid(int id, HttpHeaders  headers) {
 		RestTemplate restTemplate = new RestTemplate();
 		//System.out.println("http://192.168.35.11:8080/job/CICD Competency/"+ id +"/wfapi/changesets");
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));
 		ChangeSet[] result = restTemplate.getForObject(JENKINSURL+"/job/mdthelloworld/"+ id +"/wfapi/changesets",
 				ChangeSet[].class);
 		System.out.println(result);
@@ -89,11 +93,6 @@ public class CompetencyServiceImpl {
 
 		return stage;
 		
-	}
-	
-	
-	
-	
-	 
+	} 
 
 }
