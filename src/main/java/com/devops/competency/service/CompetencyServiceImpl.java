@@ -6,12 +6,10 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.RestTemplate;
 
 import com.devops.competency.dao.Rule;
@@ -68,6 +66,14 @@ public class CompetencyServiceImpl {
 		
 	}
 	
+	public Run[] getAllRuns(String jobName) {
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));		
+		Run run []= restTemplate.getForObject(JENKINSURL+"/job/"+ jobName +"/wfapi/runs", Run[].class);	
+		return run;
+		
+	}
+	
 	public Object getStageDetails(String path) {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));		
@@ -111,6 +117,7 @@ public class CompetencyServiceImpl {
 		logger.info("stages list from sonar "+sonarQube.toString() );
 		return sonarQube;
 		
+
 	} 
 	
 	public Object changeStageName(Object stage) {
@@ -126,4 +133,40 @@ public class CompetencyServiceImpl {
 	
 	
 
+
+	/*public String getlastBuildNumber(String jobname) throws JSONException {
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));
+		String restUrl = JENKINSURL + "/job/" + jobname + "/api/json?tree=lastBuild[number]";
+		logger.info("getlastBuildNumber :: REST URL {} ", restUrl);
+		String lastBuildNumberJson = restTemplate.getForObject(restUrl, String.class);
+		JSONObject json = new JSONObject(lastBuildNumberJson);
+		if (json.has("lastBuild") && json.getJSONObject("lastBuild").has("number")) {
+			return json.getJSONObject("lastBuild").get("number").toString();
+		} else
+			return null;
+	}*/
+
+	/*public Run getlastRunStageStatus(String jobname, String lastRunSequenceId) {
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));
+		String restUrl = JENKINSURL + "/job/" + jobname + "/" + lastRunSequenceId + "/api/wfapi/describe";
+		logger.info("getlastRunStageStatus :: REST URL {} ", restUrl);
+		Run run = restTemplate.getForObject(restUrl, Run.class);
+		return run;
+	}*/
+
+	/*public boolean isLastBuildSucessfullyDeployed(String jobname, String deployedStageName) throws Exception {
+		String lastbuild = getlastBuildNumber(jobname);
+		Run run = getlastRunStageStatus(jobname,lastbuild);
+		for(Stage stage : run.getStages()) {
+			if(stage.getName().equals(deployedStageName) && stage.getStatus().equals(Status.SUCESS.toString())) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		return false;
+	}*/
 }
