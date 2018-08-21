@@ -67,7 +67,7 @@
 
     <script>
         var newdata = {};
-        d3.json('http://metrics.sol-accelerators.com/stage/sonar', function (data) {
+        d3.json('/stage/sonar', function (data) {
             var table = d3.select("body").append("table");
             // var div = d3.select("body").append("div").style("top","0");
             // div.append("h1").html("DevOps &#956;atrix");
@@ -76,23 +76,13 @@
             tr.append("th").text("Rule");
             tr.append("th").text("Value");
             var newmetric;
-
+			var i=0;
             for (var key in data.conditions) {
+            	i++;
                 if (data.conditions[key].metric)
                     tr = table.append("tr");
-                if (data.conditions[key].metric == "new_security_rating") {
-                    newmetric = "Security";
-                } else if (data.conditions[key].metric == "new_reliability_rating") {
-                    newmetric = "Reliability Rating";
-                } else if (data.conditions[key].metric == "new_maintainability_rating") {
-                    newmetric = "Maintainability Rating";
-                } else if (data.conditions[key].metric == "new_coverage") {
-                    newmetric = "Coverage";
-                } else if (data.conditions[key].metric == "major_violations"){
-                    newmetric = "Major Violations";
-                }
-                tr.append("td").text(data.conditions[key].id);
-                tr.append("td").text(newmetric);
+                tr.append("td").text(i);
+                tr.append("td").text(data.conditions[key].metric);
                 tr.append("td").text(data.conditions[key].error);
                 console.log(data.conditions[key]);
 

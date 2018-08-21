@@ -21,7 +21,6 @@ public class RestResponseEntityExceptionHandler {
 
 	  private ResponseEntity<ErrorCompetency> handleExceptionInternal(RuntimeException ex, String bodyOfResponse,
 			  HttpHeaders httpHeaders, HttpStatus httpStatus, WebRequest request) {
-		  // TODO Auto-generated method stub
 		  final String message = Optional.of(ex.getMessage()).orElse(ex.getClass().getSimpleName());
 		  return new ResponseEntity<ErrorCompetency> (new ErrorCompetency(message),httpStatus);
 

@@ -18,6 +18,9 @@ public class Rule {
 	@JsonProperty("metric")
 	private String metric;
 
+	public Rule() {
+		
+	}
 	public Rule(String metric, String op, String warning, String error, Integer period) {
 
 		this.metric = metric;
