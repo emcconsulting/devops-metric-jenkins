@@ -45,13 +45,13 @@
 
     var newdata={};
     var project={};
-    d3.json('http://metrics.sol-accelerators.com/projects', function(data){
+    d3.json('/projects', function(data){
             project=data.jobs[0].name;
             d3.select("#chart").append('p').text("Project: IPH").style("color","#929daf");
           }).header("Authorization", "Basic YWRtaW46YWRtaW4=");
      
 var dataset=[];
-d3.json('http://metrics.sol-accelerators.com/compitency/sonar', function(data){
+d3.json('/compitency/sonar', function(data){
     var div = d3.select("body").append("div").style("top","0");
           var svg = d3.select("body").append("svg")
           .attr("height","100%")
@@ -72,17 +72,18 @@ d3.json('http://metrics.sol-accelerators.com/compitency/sonar', function(data){
             if(dataset[j].name == newdata[i]){
              
                 console.log("Yess "+dataset[j].name+" ");
-                console.log(parseInt(dataset[j].percent+20));
-                var per=parseInt(dataset[j].percent)+20;
-                dataset[j].percent=''+per;
+                console.log("percentage "+parseInt(dataset[j].percent));
+                var per=parseFloat(dataset[j].percent)+100/newdata.length;
+                dataset[j].percent=''+per.toFixed(2);
                 isExist=false;
                 break;
-            }
-            console.log("updated dataset"+dataset);
+            };
+            console.log("updated dataset")
+            console.log(dataset);
         //    j--;
         }
         if(isExist || i==0)
-        dataset.push({name: ''+newdata[i], percent:20});
+        dataset.push({name: ''+newdata[i], percent:(100/newdata.length).toFixed(2)});
         isExist=true;
     }
     console.log(dataset);
@@ -151,6 +152,7 @@ d3.json('http://metrics.sol-accelerators.com/compitency/sonar', function(data){
             .attr("dy", ".4em")
             .attr("text-anchor", "middle")
             .text(function(d){
+            	console.log(d.data.percent);
                 return d.data.percent+"%";
             })
             .style({
@@ -205,13 +207,13 @@ d3.json('http://metrics.sol-accelerators.com/compitency/sonar', function(data){
 
 
 //two
-d3.json('http://metrics.sol-accelerators.com/projects', function(data){
+d3.json('/projects', function(data){
     project=data.jobs[0].name;
     d3.select("#chart2").append('p').text("Project: CICD Compliance").style("color","#929daf");
   }).header("Authorization", "Basic YWRtaW46YWRtaW4=");
 
-var dataset=[];
-d3.json('http://metrics.sol-accelerators.com/compitency/sonar', function(data){
+var dataset_temp=[];
+d3.json('/compitency/sonar', function(data){
 var div = d3.select("body").append("div").style("top","0");
   var svg = d3.select("body").append("svg")
   .attr("height","100%")
@@ -223,11 +225,10 @@ newdata=data;
 var percentage=0
 var isExist=true;
 
- dataset = [
+dataset_temp = [
      { name: ' '+ newdata[0], percent: 90 },
      { name: ' '+ newdata[3], percent: 10 }
  ];
-
 
 var pie=d3.layout.pie().value(function(d){return d.percent}).sort(null).padAngle(.03);
 
@@ -253,7 +254,7 @@ var svg=d3.select("#chart2")
   transform:'translate('+w/2+','+h/2+')'
 });
 var path=svg.selectAll('path')
-.data(pie(dataset))
+.data(pie(dataset_temp))
 .enter()
 .append('path')
 .attr({
@@ -275,7 +276,7 @@ path.transition()
 
 var restOfTheData=function(){
 var text=svg.selectAll('text')
-    .data(pie(dataset))
+    .data(pie(dataset_temp))
     .enter()
     .append("text")
     .transition()

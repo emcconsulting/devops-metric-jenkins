@@ -1,7 +1,5 @@
 package com.devops.competency.controller;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devops.competency.dao.Rule;
+import com.devops.competency.dao.SonarQube;
 import com.devops.competency.dto.ChangeSet;
 import com.devops.competency.dto.ClubCommits;
 import com.devops.competency.dto.Commit;
@@ -37,8 +36,7 @@ import com.devops.competency.dto.Project;
 import com.devops.competency.dto.Projects;
 import com.devops.competency.dto.Run;
 import com.devops.competency.service.CompetencyServiceImpl;
-import com.devops.competency.utils.RuleDefinition;
-import com.devops.competency.utils.Validator;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,11 +56,6 @@ import net.minidev.json.JSONArray;
 @CrossOrigin (maxAge = 30)
 public class CompetencyController {
 
-	@Autowired
-	Validator validator = new Validator();
-
-	@Autowired
-	RuleDefinition commitValidator;
 	
 	public static final Log logger = LogFactory.getLog(CompetencyServiceImpl.class);
 
@@ -129,6 +122,8 @@ public class CompetencyController {
 
 		return competencyServiceImpl.getAllRuns();
 	}
+	
+	
 
 	/**
 	 * get url of all the stages. These urls can be poll to get the details of each
@@ -181,17 +176,15 @@ public class CompetencyController {
 	 * @return
 	 */
 	@RequestMapping("/stage/sonar")
-	public Object getSonarStage() {
-		Map<String, String> stages = getStages();
-		String url = stages.get("SonarStage");
-		Object sonarDetails = competencyServiceImpl.getSonarQubeRules();
+	public SonarQube getSonarStage() {
+		SonarQube sonarDetails = competencyServiceImpl.getSonarQubeRulesForUI();
 		return sonarDetails;
 
 	}
 	
 	@RequestMapping("/compitency/sonar")
 	public Object checkSonarCompetency() {
-		Object sonarDetails=getSonarStage();
+		Object sonarDetails=competencyServiceImpl.getSonarQubeRules();
 		ObjectMapper objectMapper = new ObjectMapper();
 		JSONArray sonarRulesJson=getPropertyValues(sonarDetails, "conditions.*");	
 		logger.info("sonar rules "+ sonarRulesJson);
@@ -204,22 +197,41 @@ public class CompetencyController {
 		
 		}
 	
-	private static String[] checkRulesCompliance(Rule[] sonarRules) {
-		String [] reason= new String[sonarRules.length];
+	private String[] checkRulesCompliance(Rule[] sonarRules) {
+		String [] reason= new String[sonarRules.length+1];
 		int i=0;
+		logger.info("Number of rules from sonar"+sonarRules.length);
 		for (Rule rule: sonarRules){
-			logger.info(sonarRules.toString());
+			logger.info(sonarComplianceRules.toString());
 			logger.info("Rule from sonar is "+ rule.getMetric());
 			logger.info("Rule is "+ sonarComplianceRules.getProperty(rule.getMetric()));
+			if(rule.getError().isEmpty()) {
+				logger.info("rule is not set in sonar "+ rule.getMetric());
+				reason[i++]="Not Set";
+				continue;
+			}
+			
 			if(Integer.parseInt(sonarComplianceRules.getProperty(rule.getMetric())) > Integer.parseInt(rule.getError())) {
 				 reason[i++]=/*rule.getMetric()+" should be greater than"+ */"Non Compliance"/*+rule.getMetric().substring(4)+sonarComplianceRules.getProperty(rule.getMetric())*/;
 			}
 			else 
 				reason[i++]= /*rule.getMetric() + "is compliance"+*/ "Compliance" /*sonarComplianceRules.getProperty(rule.getMetric())*/;	
+			
+			logger.info("reason set");
 
 		}
+		logger.info("Number of stages  check");
+		if(competencyServiceImpl.getNumberofStages() > Integer.parseInt(sonarComplianceRules.getProperty("number_of_stages"))){
+					reason[i]="Compliance";
+		}
+		else {
+				reason[i]="Non Compliance";
+		}
+	
+		logger.info("returnig comliance string");
 		return reason;
 	}
+
 
 	/**
 	 * Check stage is sonar stage or not.
@@ -259,7 +271,6 @@ public class CompetencyController {
 	 */
 	public static JSONArray getPropertyValues(Object object, String path) {
 
-		String value = null;
 		logger.debug("Inside getPropertyValue " + path);
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<?, ?> map = objectMapper.convertValue(object, LinkedHashMap.class);
@@ -304,7 +315,7 @@ public class CompetencyController {
 	 */
 
 	@PostMapping("/commit")
-	public String postCommit(@RequestBody String httpEntity)
+	public ClubCommits postCommit(@RequestBody String httpEntity)
 			throws JsonParseException, JsonMappingException, IOException, NoSuchMethodException, SecurityException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		ClubCommits commits = null;
@@ -317,7 +328,7 @@ public class CompetencyController {
 		commits = new ClubCommits(commit);
 
 		System.out.println(gson.toJson(commit[0]));
-		return (validator.validate(commit[0])) ? "validation sucessful" : "validation failed";
+		return commits;
 		// boolean isValid= CommitValidator.validate(commit[0],
 		// CommitValidator.IdNotZero());
 		// System.out.println("Predicate Result is"+Boolean.toString(isValid));

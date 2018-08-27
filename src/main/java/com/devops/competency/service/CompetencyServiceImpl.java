@@ -2,6 +2,7 @@ package com.devops.competency.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,8 @@ import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.devops.competency.dao.Rule;
+import com.devops.competency.dao.SonarQube;
 import com.devops.competency.dto.ChangeSet;
 import com.devops.competency.dto.Project;
 import com.devops.competency.dto.Projects;
@@ -57,7 +60,8 @@ public class CompetencyServiceImpl {
 	public Run[] getAllRuns() {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));		
-		Run run []= restTemplate.getForObject(JENKINSURL+"/job/mdthelloworld/wfapi/runs", Run[].class);	
+		Run run []= restTemplate.getForObject(JENKINSURL+"/job/"+JENKINSPROJECTNAME+"/wfapi/runs", Run[].class);	
+		logger.info("number of stages"+run[0].getStages().size());
 		return run;
 		
 	}
@@ -94,12 +98,41 @@ public class CompetencyServiceImpl {
 		RestTemplate restTemplate = new RestTemplate();
 //		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
 		
-		Object stage= restTemplate.getForObject(SONARURL+"/api/qualitygates/show?name="+SONARPROJECTNAME, Object.class);	
-		logger.info("stages list from sonar "+stage.toString() );
-
-		return stage;
+		Object rules= restTemplate.getForObject(SONARURL+"/api/qualitygates/show?name="+SONARPROJECTNAME, Object.class);
+		logger.info("stages list from sonar "+rules.toString() );
+		return rules;
 		
+	} 
+	
+	public SonarQube getSonarQubeRulesForUI() {
+		RestTemplate restTemplate = new RestTemplate();
+//		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("admin", "admin"));
+		
+		SonarQube sonarQube= restTemplate.getForObject(SONARURL+"/api/qualitygates/show?name="+SONARPROJECTNAME, SonarQube.class);
+		List<Rule> rules=sonarQube.getConditions();
+		for  (Rule rule : rules) {
+			rule.setMetric(rule.getMetric().replaceAll("_", " ").toUpperCase());
+		}
+		sonarQube.getConditions().add(new Rule("NUMBER OF STAGES", "", "", String.valueOf(getNumberofStages()), 1));
+		logger.info("stages list from sonar "+sonarQube.toString() );
+		return sonarQube;
+		
+
+	} 
+	
+	public Object changeStageName(Object stage) {
+		
+		return stage;
 	}
+	
+	public int getNumberofStages() {
+		Run[] runs=getAllRuns();
+		logger.info("number of stages"+ runs[0].getStages().size());
+		return runs[0].getStages().size();
+	}
+	
+	
+
 
 	/*public String getlastBuildNumber(String jobname) throws JSONException {
 		RestTemplate restTemplate = new RestTemplate();

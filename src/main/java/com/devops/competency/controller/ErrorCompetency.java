@@ -4,13 +4,13 @@ import org.springframework.http.HttpStatus;
 
 public class ErrorCompetency {
 	
-	String messag;
+	String message;
 	HttpStatus httpsStatus;
 	public String getMessag() {
-		return messag;
+		return message;
 	}
-	public void setMessag(String messag) {
-		this.messag = messag;
+	public void setMessag(String message) {
+		this.message = message;
 	}
 	public HttpStatus getHttpsStatus() {
 		return httpsStatus;
@@ -18,9 +18,9 @@ public class ErrorCompetency {
 	public void setHttpsStatus(HttpStatus httpsStatus) {
 		this.httpsStatus = httpsStatus;
 	}
-	public ErrorCompetency(String messag) {
+	public ErrorCompetency(String message) {
 		super();
-		this.messag = messag;
+		this.message = message;
 		this.httpsStatus = httpsStatus;
 	}
 	
