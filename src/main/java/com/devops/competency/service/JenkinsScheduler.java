@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.devops.competency.dao.JenkinsCompoiteKey;
-import com.devops.competency.dao.JenkinsStageDetails;
 import com.devops.competency.dao.JenkinsStageDetailsRepository;
-import com.devops.competency.dao.JobMetaData;
 import com.devops.competency.dao.JobMetaDataRepository;
 import com.devops.competency.dto.Run;
 import com.devops.competency.dto.Stage;
+import com.devops.competency.entity.JenkinsCompoiteKey;
+import com.devops.competency.entity.JenkinsStageDetails;
+import com.devops.competency.entity.JobMetaData;
 
 @Component
 public class JenkinsScheduler {
