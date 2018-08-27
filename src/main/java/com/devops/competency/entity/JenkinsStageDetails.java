@@ -17,6 +17,9 @@ public class JenkinsStageDetails implements Serializable {
 	@EmbeddedId
 	JenkinsCompoiteKey jenkinsCompoiteKey;
 
+	@Column(name = "JOB_NAME")
+	private String jobName;
+
 	@Column(name = "JOB_STATUS")
 	private String jobRunStatus;
 
@@ -68,6 +71,14 @@ public class JenkinsStageDetails implements Serializable {
 
 	public void setJobRunDate(Date jobRunDate) {
 		this.jobRunDate = jobRunDate;
+	}
+
+	public String getJobName() {
+		return jobName;
+	}
+
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
 	}
 
 	@Override

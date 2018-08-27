@@ -1,22 +1,35 @@
 package com.devops.competency.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Embeddable
-public class JenkinsCompoiteKey implements Serializable {
+public class JobFrequencyCompositeKey implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@Temporal(TemporalType.DATE)
+	@Column(name = "JOB_DATE")
+	private Date jobDate;
+
 	@Column(name = "JOB_ID")
 	private String jobId;
 
-	@Column(name = "JOB_INSTANCE")
-	private String jobInstanceName;
+	public Date getJobDate() {
+		return jobDate;
+	}
+
+	public void setJobDate(Date jobDate) {
+		this.jobDate = jobDate;
+	}
 
 	public String getJobId() {
 		return jobId;
@@ -26,20 +39,12 @@ public class JenkinsCompoiteKey implements Serializable {
 		this.jobId = jobId;
 	}
 
-	public String getJobInstanceName() {
-		return jobInstanceName;
-	}
-
-	public void setJobInstanceName(String jobInstanceName) {
-		this.jobInstanceName = jobInstanceName;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((jobDate == null) ? 0 : jobDate.hashCode());
 		result = prime * result + ((jobId == null) ? 0 : jobId.hashCode());
-		result = prime * result + ((jobInstanceName == null) ? 0 : jobInstanceName.hashCode());
 		return result;
 	}
 
@@ -51,16 +56,16 @@ public class JenkinsCompoiteKey implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JenkinsCompoiteKey other = (JenkinsCompoiteKey) obj;
+		JobFrequencyCompositeKey other = (JobFrequencyCompositeKey) obj;
+		if (jobDate == null) {
+			if (other.jobDate != null)
+				return false;
+		} else if (!jobDate.equals(other.jobDate))
+			return false;
 		if (jobId == null) {
 			if (other.jobId != null)
 				return false;
 		} else if (!jobId.equals(other.jobId))
-			return false;
-		if (jobInstanceName == null) {
-			if (other.jobInstanceName != null)
-				return false;
-		} else if (!jobInstanceName.equals(other.jobInstanceName))
 			return false;
 		return true;
 	}
