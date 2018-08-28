@@ -4,9 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
-@Entity(name = "JOB_FREQUENCY")
-public class JobFrequencyEntity {
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "compositeKey", "jobName", "frequencyPerDay" })
+@Entity(name = "JOB_FREQUENCY")
+public class JobFrequency {
+
+	@JsonProperty("compositeKey")
 	@EmbeddedId
 	private JobFrequencyCompositeKey jobFrequencyCompositeKey;
 

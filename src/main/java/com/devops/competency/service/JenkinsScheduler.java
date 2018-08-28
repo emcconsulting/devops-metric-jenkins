@@ -21,7 +21,7 @@ import com.devops.competency.dto.Stage;
 import com.devops.competency.entity.JenkinsCompoiteKey;
 import com.devops.competency.entity.JenkinsStageDetails;
 import com.devops.competency.entity.JobFrequencyCompositeKey;
-import com.devops.competency.entity.JobFrequencyEntity;
+import com.devops.competency.entity.JobFrequency;
 import com.devops.competency.entity.JobMetaData;
 
 @Component
@@ -121,7 +121,7 @@ public class JenkinsScheduler {
 
 			jenkinsStageDetailsRepo.getJobFrequency(today.getTime()).forEach(jobfrequency -> {
 				Object[] ss = (Object[]) jobfrequency;
-				JobFrequencyEntity frequencyEntity = new JobFrequencyEntity();
+				JobFrequency frequencyEntity = new JobFrequency();
 				JobFrequencyCompositeKey jobFrequencyCompositeKey = new JobFrequencyCompositeKey();
 				jobFrequencyCompositeKey.setJobId(ss[0].toString());
 				jobFrequencyCompositeKey.setJobDate((Date) (ss[3]));
