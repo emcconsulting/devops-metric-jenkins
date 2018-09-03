@@ -46,49 +46,28 @@ public class JenkinsScheduler {
 	@Scheduled(cron = "${api.refresh.pulljenkinsdetail.cron}")
 	private void pullJenkinsDetails() {
 		logger.info("---Job started pullJenkinsDetails----");
-
+		Calendar yesterday = Calendar.getInstance();
+		yesterday.add(Calendar.DATE, -1);
 		jobMetaDataRepository.findAll().forEach(jobMetadata -> {
 			logger.info(" Found data for :: JobMEtadata {} ", jobMetadata);
-			if (null != jobMetadata)
-				runJob(jobMetadata);
+			if (null != jobMetadata) {
+				runJob(jobMetadata, yesterday);
+			}
 		});
 		logger.info("---Job Ended pullJenkinsDetails----");
 	}
 
-	/*
-	 * @SuppressWarnings("unchecked")
-	 * 
-	 * @Scheduled(cron = "${api.refresh.frequency.cron}") private void
-	 * frequencyScheduler() { logger.info("---Job started frequencyScheduler----");
-	 * 
-	 * jenkinsStageDetailsRepo.getJobFrequency().forEach(jobfrequency -> { Object[]
-	 * ss = (Object[]) jobfrequency; JobFrequencyEntity frequencyEntity = new
-	 * JobFrequencyEntity(); JobFrequencyCompositeKey jobFrequencyCompositeKey = new
-	 * JobFrequencyCompositeKey();
-	 * jobFrequencyCompositeKey.setJobId(ss[0].toString());
-	 * jobFrequencyCompositeKey.setJobDate((Date) (ss[3]));
-	 * frequencyEntity.setJobFrequencyCompositeKey(jobFrequencyCompositeKey);
-	 * frequencyEntity.setFrequencyPerDay(ss[2].toString());
-	 * frequencyEntity.setJobName(ss[1].toString());
-	 * jobFrequencyRepository.save(frequencyEntity); });
-	 * 
-	 * logger.info("---Job Ended frequencyScheduler----"); }
-	 */
-
-	@SuppressWarnings("unchecked")
-	private void runJob(JobMetaData jobMetadata) {
+	private void runJob(JobMetaData jobMetadata, Calendar date) {
 		Run[] allRuns = competencyServiceImpl.getAllRuns(jobMetadata.getJobName());
 		if (null != allRuns) {
 			List<Run> runList = new ArrayList<Run>(Arrays.asList(allRuns));
-			Calendar today = Calendar.getInstance();
-			logger.info("Scheduler is running for date :: {} ", today.getTime());
-			// today.add(Calendar.DATE, -1);
-
-			// filter the run happened today
+			logger.info("Scheduler is running for date :: {} ", date.getTime());
+			
+			// filter the run happened by date
 			Stream<Run> runstream = runList.stream().filter(run -> {
 				Calendar jobRunDate = Calendar.getInstance();
 				jobRunDate.setTime(new Date(run.getStartTimeMillis()));
-				if (isSameDay(today, jobRunDate)) {
+				if (isSameDay(date, jobRunDate)) {
 					return true;
 				} else {
 					return false;
@@ -108,18 +87,11 @@ public class JenkinsScheduler {
 								.findOne(getCompositeKey(run, jobMetadata, new JenkinsCompoiteKey())) == null) {
 							jenkinsStageDetailsRepo.save(jenkinsStageDetails);
 						}
-
-						/*
-						 * // save this values in to DB System.out.println(jobMetadata);
-						 * System.out.println(run.getName()); System.out.println(new
-						 * Date(run.getStartTimeMillis())); System.out.println(run.getStatus());
-						 * System.out.println(stage.getStatus());
-						 */
 					}
 				});
 			});
 
-			jenkinsStageDetailsRepo.getJobFrequency(today.getTime()).forEach(jobfrequency -> {
+			jenkinsStageDetailsRepo.getJobFrequencyPerDay(date.getTime()).forEach(jobfrequency -> {
 				Object[] ss = (Object[]) jobfrequency;
 				JobFrequency frequencyEntity = new JobFrequency();
 				JobFrequencyCompositeKey jobFrequencyCompositeKey = new JobFrequencyCompositeKey();

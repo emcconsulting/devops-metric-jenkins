@@ -18,7 +18,7 @@ public class JobFrequency {
 	@Column(name = "JOB_NAME")
 	private String jobName;
 
-	@Column(name = "JOB_FREQUENCY_DATE")
+	@Column(name = "JOB_FREQUENCY_PERDAY")
 	private String frequencyPerDay;
 
 	public JobFrequencyCompositeKey getJobFrequencyCompositeKey() {

@@ -16,5 +16,5 @@ public interface JenkinsStageDetailsRepository extends JpaRepository<JenkinsStag
 			+ "devops_statics_jenkins.jenkins_job_details where DATE(job_run_date) = DATE(:date) GROUP BY DATE(job_run_date),job_id;";
 
 	@Query(value = query, nativeQuery = true)
-	List<Object> getJobFrequency(@Param("date") Date date);
+	List<Object> getJobFrequencyPerDay(@Param("date") Date date);
 }
