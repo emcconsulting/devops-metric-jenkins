@@ -1,4 +1,4 @@
-package com.devops.competency.dao;
+package com.devops.competency.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

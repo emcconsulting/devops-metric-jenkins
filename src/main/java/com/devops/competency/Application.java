@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@EntityScan("com.devops.competency.dao")
+@EntityScan("com.devops.competency.entity")
 @EnableJpaRepositories("com.devops.competency.dao")
 @EnableCaching
 public class Application {

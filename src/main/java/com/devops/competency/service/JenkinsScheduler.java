@@ -13,13 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.devops.competency.dao.JenkinsCompoiteKey;
-import com.devops.competency.dao.JenkinsStageDetails;
 import com.devops.competency.dao.JenkinsStageDetailsRepository;
-import com.devops.competency.dao.JobMetaData;
+import com.devops.competency.dao.JobFrequencyRepository;
 import com.devops.competency.dao.JobMetaDataRepository;
 import com.devops.competency.dto.Run;
 import com.devops.competency.dto.Stage;
+import com.devops.competency.entity.JenkinsCompoiteKey;
+import com.devops.competency.entity.JenkinsStageDetails;
+import com.devops.competency.entity.JobFrequencyCompositeKey;
+import com.devops.competency.entity.JobFrequency;
+import com.devops.competency.entity.JobMetaData;
 
 @Component
 public class JenkinsScheduler {
@@ -37,32 +40,34 @@ public class JenkinsScheduler {
 	@Autowired
 	JenkinsStageDetailsRepository jenkinsStageDetailsRepo;
 
-	@Scheduled(cron = "${api.refresh.cron}")
-	private void pullJenkinsDetails() {
-		logger.info("---Job started----");
+	@Autowired
+	JobFrequencyRepository jobFrequencyRepository;
 
+	@Scheduled(cron = "${api.refresh.pulljenkinsdetail.cron}")
+	private void pullJenkinsDetails() {
+		logger.info("---Job started pullJenkinsDetails----");
+		Calendar yesterday = Calendar.getInstance();
+		yesterday.add(Calendar.DATE, -1);
 		jobMetaDataRepository.findAll().forEach(jobMetadata -> {
-			logger.info(" JobMEtadata {} ", jobMetadata);
-			if (null != jobMetadata)
-				runJob(jobMetadata);
+			logger.info(" Found data for :: JobMEtadata {} ", jobMetadata);
+			if (null != jobMetadata) {
+				runJob(jobMetadata, yesterday);
+			}
 		});
-		logger.info("---Job Ended----");
+		logger.info("---Job Ended pullJenkinsDetails----");
 	}
 
-	private void runJob(JobMetaData jobMetadata) {
+	private void runJob(JobMetaData jobMetadata, Calendar date) {
 		Run[] allRuns = competencyServiceImpl.getAllRuns(jobMetadata.getJobName());
 		if (null != allRuns) {
 			List<Run> runList = new ArrayList<Run>(Arrays.asList(allRuns));
-
-			// filter the run happened today
+			logger.info("Scheduler is running for date :: {} ", date.getTime());
+			
+			// filter the run happened by date
 			Stream<Run> runstream = runList.stream().filter(run -> {
 				Calendar jobRunDate = Calendar.getInstance();
 				jobRunDate.setTime(new Date(run.getStartTimeMillis()));
-
-				Calendar today = Calendar.getInstance();
-				//cal.add(Calendar.DATE, -1);
-
-				if (isSameDay(today, jobRunDate)) {
+				if (isSameDay(date, jobRunDate)) {
 					return true;
 				} else {
 					return false;
@@ -82,14 +87,20 @@ public class JenkinsScheduler {
 								.findOne(getCompositeKey(run, jobMetadata, new JenkinsCompoiteKey())) == null) {
 							jenkinsStageDetailsRepo.save(jenkinsStageDetails);
 						}
-						/*
-						 * // save this values in to DB System.out.println(jobMetadata);
-						 * System.out.println(run.getName()); System.out.println(new
-						 * Date(run.getStartTimeMillis())); System.out.println(run.getStatus());
-						 * System.out.println(stage.getStatus());
-						 */
 					}
 				});
+			});
+
+			jenkinsStageDetailsRepo.getJobFrequencyPerDay(date.getTime()).forEach(jobfrequency -> {
+				Object[] ss = (Object[]) jobfrequency;
+				JobFrequency frequencyEntity = new JobFrequency();
+				JobFrequencyCompositeKey jobFrequencyCompositeKey = new JobFrequencyCompositeKey();
+				jobFrequencyCompositeKey.setJobId(ss[0].toString());
+				jobFrequencyCompositeKey.setJobDate((Date) (ss[3]));
+				frequencyEntity.setJobFrequencyCompositeKey(jobFrequencyCompositeKey);
+				frequencyEntity.setFrequencyPerDay(ss[2].toString());
+				frequencyEntity.setJobName(ss[1].toString());
+				jobFrequencyRepository.save(frequencyEntity);
 			});
 		}
 	}
@@ -100,6 +111,7 @@ public class JenkinsScheduler {
 		JenkinsCompoiteKey compoiteKey = new JenkinsCompoiteKey();
 		getCompositeKey(run, jobMetadata, compoiteKey);
 
+		details.setJobName(jobMetadata.getJobName());
 		details.setJenkinsCompoiteKey(compoiteKey);
 		details.setJobRunDate(new Date(run.getStartTimeMillis()));
 		details.setStageName(stage.getName());
@@ -110,7 +122,7 @@ public class JenkinsScheduler {
 
 	private JenkinsCompoiteKey getCompositeKey(Run run, JobMetaData jobMetadata, JenkinsCompoiteKey compoiteKey) {
 		compoiteKey.setJobInstanceName(run.getName());
-		compoiteKey.setJobName(jobMetadata.getJobName());
+		compoiteKey.setJobId(jobMetadata.getJobName());
 		return compoiteKey;
 	}
 
