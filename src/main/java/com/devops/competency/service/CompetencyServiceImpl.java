@@ -59,8 +59,10 @@ public class CompetencyServiceImpl {
 	
 	public Run[] getAllRuns() {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));		
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));
+		logger.info("Jenkins url is "+JENKINSURL+"/job/"+JENKINSPROJECTNAME+"/wfapi/runs");
 		Run run []= restTemplate.getForObject(JENKINSURL+"/job/"+JENKINSPROJECTNAME+"/wfapi/runs", Run[].class);	
+		logger.info(run[0].getStages().toString());
 		logger.info("number of stages"+run[0].getStages().size());
 		return run;
 		
@@ -68,8 +70,10 @@ public class CompetencyServiceImpl {
 	
 	public Run[] getAllRuns(String jobName) {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));		
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(JENKINSUSERNAME, JENKINSPASSWORD));	
+		logger.info(JENKINSURL+"/job/"+jobName+"/wfapi/runs");
 		Run run []= restTemplate.getForObject(JENKINSURL+"/job/"+ jobName +"/wfapi/runs", Run[].class);	
+		logger.info("run"+run.length);
 		return run;
 		
 	}
@@ -126,6 +130,7 @@ public class CompetencyServiceImpl {
 	}
 	
 	public int getNumberofStages() {
+		logger.info("getting all runs from jenkins");
 		Run[] runs=getAllRuns();
 		logger.info("number of stages"+ runs[0].getStages().size());
 		return runs[0].getStages().size();

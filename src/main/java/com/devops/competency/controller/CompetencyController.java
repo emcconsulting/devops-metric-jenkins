@@ -221,6 +221,7 @@ public class CompetencyController {
 
 		}
 		logger.info("Number of stages  check");
+		logger.info("number of stages"+competencyServiceImpl.getNumberofStages());
 		if(competencyServiceImpl.getNumberofStages() > Integer.parseInt(sonarComplianceRules.getProperty("number_of_stages"))){
 					reason[i]="Compliance";
 		}
