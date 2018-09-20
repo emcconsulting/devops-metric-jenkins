@@ -17,4 +17,7 @@ public interface JobFrequencyRepository extends JpaRepository<JobFrequency, JobF
 
 	@Query(value = "SELECT SUM(frequencyPerDay) from JOB_FREQUENCY j where j.jobFrequencyCompositeKey.jobId = :jobId and  j.jobFrequencyCompositeKey.jobDate >:yearBackDate")
 	public Integer getJobDetailsForYears(@Param("jobId") String jobId, @Param("yearBackDate") Date yearBackDate);
+
+	@Query(value = "SELECT j.jobFrequencyCompositeKey.jobId,SUM(frequencyPerDay) from JOB_FREQUENCY j where j.jobFrequencyCompositeKey.jobDate >:yearBackDate group by j.jobFrequencyCompositeKey.jobId")
+	public List<Object[]> getJobDetailsForAll(@Param("yearBackDate") Date yearBackDate);
 }
