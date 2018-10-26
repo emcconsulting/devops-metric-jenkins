@@ -1,5 +1,6 @@
 package com.devops.competency.controller;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devops.competency.dao.JobFrequencyRepository;
+import com.devops.competency.dto.FrequencyDetails;
 import com.devops.competency.entity.JobFrequency;
 import com.devops.competency.utils.MetaDataClient;
 
@@ -42,7 +44,7 @@ public class JenkinsDetailsController {
 		return new ResponseEntity<List<JobFrequency>>(jobFrequencyList, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/jenkins/jobFrequency/{jobId}")
+	/*@GetMapping(value = "/jenkins/jobFrequency/{jobId}")
 	public String getJobFrequencyDetailsForJobId(@PathVariable(value = "jobId") String jobId) {
 		Calendar today = Calendar.getInstance();
 		today.add(Calendar.YEAR, -1);
@@ -50,9 +52,9 @@ public class JenkinsDetailsController {
 		Integer deployedValueForYear = jobFrequencyRepository.getJobDetailsForYears(jobId, oneYearOldDate);
 		return getFrequencyString(deployedValueForYear);
 
-	}
+	}*/
 
-	@GetMapping(value = "/jenkins/jobfrequency/all")
+	/*@GetMapping(value = "/jenkins/jobfrequency/all")
 	public Map<String, String> getJobFrequencyDetailsForAll() {
 		Map<String, String> map = new HashMap<String, String>();
 		Calendar today = Calendar.getInstance();
@@ -63,21 +65,37 @@ public class JenkinsDetailsController {
 			map.put((String) aa[0], getFrequencyString(Integer.parseInt((String) aa[1])));
 		}
 		return map;
+	}*/
+	
+	
+	@GetMapping(value = "/jenkins/jobfrequency/all")
+	public List<FrequencyDetails> getJobFrequencyDetailsForAll() {
+		List<FrequencyDetails> list = new ArrayList<FrequencyDetails>();
+		Calendar today = Calendar.getInstance();
+		today.add(Calendar.YEAR, -1);
+		Date oneYearOldDate = today.getTime();
+		List<Object[]> deployedValueForYear = jobFrequencyRepository.getJobDetailsForAll(oneYearOldDate);
+		for (Object[] aa : deployedValueForYear) {
+			FrequencyDetails f = new FrequencyDetails();
+			f.setProjectName((String)aa[0]);
+			f.setFrequency(getFrequencyString(Integer.parseInt((String) aa[1])));
+			f.setFrequencyPerYear((double) (Integer.parseInt((String) aa[1]))/365);
+			list.add(f);
+			//map.put((String) aa[0], getFrequencyString(Integer.parseInt((String) aa[1])));
+		}
+		return list;
 	}
+	
 
 	private String getFrequencyString(Integer deployedValueForYear) {
 		if (deployedValueForYear < 12)
-			return "deployed " + deployedValueForYear + " times per year" + " ~"
-					+ (double) (deployedValueForYear / 365);
+			return deployedValueForYear + " times per year";
 		else if (deployedValueForYear >= 12 && deployedValueForYear < 52)
-			return "deployed " + deployedValueForYear / 12 + " times per month" + " ~"
-					+ (double) (deployedValueForYear / 365);
+			return deployedValueForYear / 12 + " times per month";
 		else if (deployedValueForYear >= 52 && deployedValueForYear < 365)
-			return "deployed " + deployedValueForYear / 52 + " times per week" + " ~"
-					+ (double) (deployedValueForYear / 365);
+			return deployedValueForYear / 52 + " times per week";
 		else
-			return "deployed " + deployedValueForYear / 365 + " times per day" + " ~"
-					+ (double) (deployedValueForYear / 365);
+			return deployedValueForYear / 365 + " times per day";
 	}
 
 	@GetMapping(value = "/test")
