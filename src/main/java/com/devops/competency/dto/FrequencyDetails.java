@@ -4,7 +4,7 @@ public class FrequencyDetails {
 
 	private String projectName;
 	private String frequency;
-	private Double frequencyPerYear;
+	private Double frequencyPerWeek;
 
 	public String getFrequency() {
 		return frequency;
@@ -14,12 +14,12 @@ public class FrequencyDetails {
 		this.frequency = frequency;
 	}
 
-	public Double getFrequencyPerYear() {
-		return frequencyPerYear;
+	public Double getFrequencyPerWeek() {
+		return frequencyPerWeek;
 	}
 
-	public void setFrequencyPerYear(Double frequencyPerYear) {
-		this.frequencyPerYear = frequencyPerYear;
+	public void setFrequencyPerWeek(Double frequencyPerWeek) {
+		this.frequencyPerWeek = frequencyPerWeek;
 	}
 
 	public String getProjectName() {

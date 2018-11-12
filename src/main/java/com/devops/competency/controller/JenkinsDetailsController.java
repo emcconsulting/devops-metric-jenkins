@@ -79,7 +79,7 @@ public class JenkinsDetailsController {
 			FrequencyDetails f = new FrequencyDetails();
 			f.setProjectName((String)aa[0]);
 			f.setFrequency(getFrequencyString(Integer.parseInt((String) aa[1])));
-			f.setFrequencyPerYear((double) (Integer.parseInt((String) aa[1]))/365);
+			f.setFrequencyPerWeek((double) (Integer.parseInt((String) aa[1]))/52);
 			list.add(f);
 			//map.put((String) aa[0], getFrequencyString(Integer.parseInt((String) aa[1])));
 		}
